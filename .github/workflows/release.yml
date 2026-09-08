@@ -106,10 +106,14 @@ jobs:
     steps:
       - uses: actions/checkout@v5
 
+      # docker/build-push-action uploads a gzip .dockerbuild record that is not a
+      # valid zip. download-artifact without a pattern fetches every artifact and
+      # fails on that file after retries.
       - uses: actions/download-artifact@v5
         with:
           path: artifacts
           merge-multiple: true
+          pattern: listener-linux-*
 
       - name: Create release
         uses: softprops/action-gh-release@v3
