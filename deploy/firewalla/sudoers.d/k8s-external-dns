@@ -1,0 +1,4 @@
+# Allow the listener (user pi) to restart Firewalla DNS only.
+# Absolute paths must match SystemctlReloader / the on-device layout.
+# Restored by post_main.d after firmware upgrades wipe /etc.
+pi ALL=(root) NOPASSWD: /usr/bin/systemctl restart firerouter_dns, /usr/bin/systemctl stop firerouter_dns, /usr/bin/systemctl start firerouter_dns, /bin/systemctl restart firerouter_dns, /bin/systemctl stop firerouter_dns, /bin/systemctl start firerouter_dns

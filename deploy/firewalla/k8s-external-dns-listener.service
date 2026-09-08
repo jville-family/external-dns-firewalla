@@ -1,0 +1,30 @@
+[Unit]
+Description=external-dns Firewalla Listener
+Documentation=https://github.com/jville-family/external-dns-firewalla
+After=network-online.target firerouter_dns.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=pi
+Group=pi
+WorkingDirectory=/home/pi/.firewalla/k8s-external-dns
+EnvironmentFile=/home/pi/.firewalla/k8s-external-dns/config.env
+ExecStart=/home/pi/.firewalla/k8s-external-dns/listener
+Restart=on-failure
+RestartSec=5
+
+# Sandboxing / hardening
+# NoNewPrivileges must stay false so /usr/bin/sudo (setuid) can escalate
+# only for the firerouter_dns systemctl commands allowed in sudoers.
+ProtectSystem=strict
+ReadWritePaths=/home/pi/.firewalla/k8s-external-dns/ /home/pi/.firewalla/config/dnsmasq_local/ /run/dbus /run/systemd
+PrivateTmp=true
+ProtectDevices=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+NoNewPrivileges=false
+
+[Install]
+WantedBy=multi-user.target
