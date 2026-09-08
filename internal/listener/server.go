@@ -20,7 +20,9 @@ import (
 type JobKind int
 
 const (
+	// JobRead is a serialized state read.
 	JobRead JobKind = iota
+	// JobWrite is a serialized ApplyChanges write.
 	JobWrite
 )
 

@@ -59,10 +59,7 @@ func (s SystemctlReloader) Reload(ctx context.Context) error {
 		if err := run(systemctl, "stop", firerouterDNS); err != nil {
 			return err
 		}
-		if err := run(systemctl, "start", firerouterDNS); err != nil {
-			return err
-		}
-		return nil
+		return run(systemctl, "start", firerouterDNS)
 	}
 	return run(systemctl, "restart", firerouterDNS)
 }

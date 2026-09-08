@@ -13,7 +13,9 @@ import (
 )
 
 const (
+	// HeaderTimestamp is the unix-seconds request time used for HMAC and replay protection.
 	HeaderTimestamp = "X-Request-Timestamp"
+	// HeaderSignature is the hex-encoded HMAC-SHA256 of the canonical request.
 	HeaderSignature = "X-Signature"
 )
 
@@ -50,11 +52,11 @@ func (v *Verifier) Verify(method, path string, body []byte, tsHeader, sigHeader 
 	if skew < 0 {
 		skew = -skew
 	}
-	max := v.MaxSkew
-	if max == 0 {
-		max = 10 * time.Second
+	maxSkew := v.MaxSkew
+	if maxSkew == 0 {
+		maxSkew = 10 * time.Second
 	}
-	if skew > max {
+	if skew > maxSkew {
 		return fmt.Errorf("timestamp outside allowed window")
 	}
 	sig, err := hex.DecodeString(sigHeader)

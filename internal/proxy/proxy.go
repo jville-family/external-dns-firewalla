@@ -151,7 +151,7 @@ func (s *Server) handleReady(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusServiceUnavailable)
 		return
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 	_, _ = io.Copy(io.Discard, resp.Body)
 	if resp.StatusCode != http.StatusOK {
 		http.Error(w, "listener unhealthy", http.StatusServiceUnavailable)
@@ -181,7 +181,7 @@ func (s *Server) forward(ctx context.Context, method, path string, body []byte) 
 	if err != nil {
 		return nil, 0, err
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, resp.StatusCode, err

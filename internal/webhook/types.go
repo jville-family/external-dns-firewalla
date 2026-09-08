@@ -5,13 +5,13 @@ const MediaType = "application/external.dns.webhook+json;version=1"
 
 // Endpoint is the wire representation of an external-dns DNS endpoint.
 type Endpoint struct {
-	DNSName          string             `json:"dnsName"`
-	Targets          []string           `json:"targets"`
-	RecordType       string             `json:"recordType"`
-	SetIdentifier    string             `json:"setIdentifier,omitempty"`
-	RecordTTL        int64              `json:"recordTTL,omitempty"`
-	Labels           map[string]string  `json:"labels,omitempty"`
-	ProviderSpecific ProviderSpecific   `json:"providerSpecific,omitempty"`
+	DNSName          string            `json:"dnsName"`
+	Targets          []string          `json:"targets"`
+	RecordType       string            `json:"recordType"`
+	SetIdentifier    string            `json:"setIdentifier,omitempty"`
+	RecordTTL        int64             `json:"recordTTL,omitempty"`
+	Labels           map[string]string `json:"labels,omitempty"`
+	ProviderSpecific ProviderSpecific  `json:"providerSpecific,omitempty"`
 }
 
 // ProviderSpecific is a list of provider-specific key/value pairs.

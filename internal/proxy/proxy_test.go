@@ -169,10 +169,10 @@ func TestReadinessMatrix(t *testing.T) {
 	for _, tc := range cases {
 		t.Run(tc.name, func(t *testing.T) {
 			p := proxy.New(proxy.Config{
-				ListenerURL:    tc.url,
-				Secret:         []byte("secret"),
-				AllowDomains:   []string{"app.lan"},
-				HealthTimeout:  tc.to,
+				ListenerURL:   tc.url,
+				Secret:        []byte("secret"),
+				AllowDomains:  []string{"app.lan"},
+				HealthTimeout: tc.to,
 			})
 			rr := httptest.NewRecorder()
 			p.HealthHandler().ServeHTTP(rr, httptest.NewRequest(http.MethodGet, "/healthz/ready", nil))

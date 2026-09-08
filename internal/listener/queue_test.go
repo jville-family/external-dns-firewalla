@@ -23,7 +23,7 @@ func TestQueueFullReturns503(t *testing.T) {
 	block := make(chan struct{})
 	r := &blockingReloader{block: block}
 	s := newTestServerWith(t, 1, r)
-	defer s.Shutdown(context.Background())
+	defer func() { _ = s.Shutdown(context.Background()) }()
 
 	started := make(chan struct{})
 	go func() {
@@ -71,7 +71,7 @@ func TestSerialExecution(t *testing.T) {
 		mu.Unlock()
 	}}
 	s := newTestServerWith(t, 8, r)
-	defer s.Shutdown(context.Background())
+	defer func() { _ = s.Shutdown(context.Background()) }()
 
 	var wg sync.WaitGroup
 	for i := 0; i < 5; i++ {
@@ -100,7 +100,7 @@ func TestSerialExecution(t *testing.T) {
 
 func TestReadAfterWrite(t *testing.T) {
 	s := newTestServerWith(t, 8, &fakeReloader{})
-	defer s.Shutdown(context.Background())
+	defer func() { _ = s.Shutdown(context.Background()) }()
 
 	req := signedReq(t, s.secret, http.MethodPost, "/records", createBody("plex.app.lan", "10.0.0.5", ""))
 	rr := httptest.NewRecorder()
@@ -139,7 +139,7 @@ func TestShutdownNoGoroutineLeak(t *testing.T) {
 
 func TestHealthWritableAndNoDiskWrites(t *testing.T) {
 	s := newTestServerWith(t, 4, &fakeReloader{})
-	defer s.Shutdown(context.Background())
+	defer func() { _ = s.Shutdown(context.Background()) }()
 
 	dir := s.dnsDir
 	snap := snapshotDir(t, dir)
