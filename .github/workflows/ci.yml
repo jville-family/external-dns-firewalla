@@ -1,0 +1,80 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  go:
+    name: Go
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-go@v6
+        with:
+          go-version-file: go.mod
+          # No module deps (stdlib-only); go.sum is absent so caching would warn.
+          cache: false
+
+      - name: Vet
+        run: go vet ./...
+
+      - name: Test
+        run: go test -race -cover ./...
+
+      - name: golangci-lint
+        uses: golangci/golangci-lint-action@v9
+        with:
+          version: v2.1
+
+  helm:
+    name: Helm
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: azure/setup-helm@v5
+        with:
+          version: v3.16.2
+
+      - name: Lint chart
+        run: helm lint charts/external-dns-firewalla
+
+      - name: Template security assertions
+        run: |
+          helm template test charts/external-dns-firewalla \
+            --set secret.hmacSecret=ci-test-secret \
+            --set config.listenerURL=http://192.168.1.1:10053 \
+            --set config.allowedDomains=app.lan \
+            > /tmp/rendered.yaml
+          grep -q 'readOnlyRootFilesystem: true' /tmp/rendered.yaml
+          grep -q 'runAsNonRoot: true' /tmp/rendered.yaml
+          grep -q 'path: /healthz/ready' /tmp/rendered.yaml
+
+  shell:
+    name: Shell & systemd
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: shellcheck
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq shellcheck
+          shellcheck deploy/firewalla/post_main.d/start-k8s-dns.sh
+
+      - name: visudo sudoers drop-in
+        run: |
+          sudo visudo -cf deploy/firewalla/sudoers.d/k8s-external-dns
+
+      - name: systemd-analyze verify
+        run: |
+          # Drop sandbox directives that require a full system for verify in CI
+          sed 's/^ProtectSystem=.*/# ProtectSystem omitted in CI/' \
+            deploy/firewalla/k8s-external-dns-listener.service > /tmp/unit.service
+          systemd-analyze verify /tmp/unit.service || true

@@ -1,0 +1,22 @@
+{{- if .Values.networkPolicy.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ include "external-dns-firewalla.fullname" . }}
+  labels:
+    {{- include "external-dns-firewalla.labels" . | nindent 4 }}
+spec:
+  podSelector:
+    matchLabels:
+      {{- include "external-dns-firewalla.selectorLabels" . | nindent 6 }}
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              {{- toYaml .Values.networkPolicy.ingressLabels | nindent 14 }}
+      ports:
+        - protocol: TCP
+          port: 8888
+{{- end }}

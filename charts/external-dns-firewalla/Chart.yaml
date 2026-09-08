@@ -1,0 +1,14 @@
+apiVersion: v2
+name: external-dns-firewalla
+description: Webhook proxy bridging external-dns to a Firewalla listener
+type: application
+version: 0.1.0
+appVersion: "0.1.0"
+home: https://github.com/jville-family/external-dns-firewalla
+sources:
+  - https://github.com/jville-family/external-dns-firewalla
+keywords:
+  - external-dns
+  - firewalla
+  - dns
+  - webhook

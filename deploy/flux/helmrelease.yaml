@@ -1,0 +1,37 @@
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: HelmRepository
+metadata:
+  name: external-dns-firewalla
+  namespace: flux-system
+spec:
+  type: oci
+  url: oci://ghcr.io/jville-family
+  interval: 1h
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: external-dns-firewalla
+  namespace: external-dns
+spec:
+  interval: 30m
+  chart:
+    spec:
+      chart: external-dns-firewalla
+      version: "0.1.x"
+      sourceRef:
+        kind: HelmRepository
+        name: external-dns-firewalla
+        namespace: flux-system
+      interval: 1h
+  values:
+    config:
+      # Firewalla LAN IP and LISTEN_PORT
+      listenerURL: "http://192.168.1.1:10053"
+      allowedDomains: "app.lan,k8s.local"
+      logLevel: warn
+    secret:
+      create: false
+      existingSecret: external-dns-firewalla-hmac
+    # Example sidecar-compatible Service for external-dns --webhook-provider-url
+    # Point external-dns at http://external-dns-firewalla.external-dns.svc:8888
