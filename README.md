@@ -102,7 +102,7 @@ systemctl status k8s-external-dns-listener
 ### Helm
 
 ```bash
-helm install external-dns-firewalla oci://ghcr.io/jville-family/external-dns-firewalla \
+helm install external-dns-firewalla oci://ghcr.io/jville-family/charts/external-dns-firewalla \
   --namespace external-dns --create-namespace \
   --set secret.hmacSecret="<same-secret-as-listener>" \
   --set config.listenerURL="http://<firewalla-lan-ip>:10053" \
@@ -166,8 +166,10 @@ TDD: each package under `internal/` has tests that were written before the imple
 Tagging `v*` triggers:
 
 1. Multi-arch proxy image → `ghcr.io/<owner>/external-dns-firewalla`
-2. Helm chart OCI push → `oci://ghcr.io/<owner>/external-dns-firewalla`
+2. Helm chart OCI push → `oci://ghcr.io/<owner>/charts/external-dns-firewalla`
 3. Cross-compiled listener binaries (`linux/arm64`, `linux/amd64`, `-ldflags="-s -w"`) attached to the GitHub Release
+
+> **Note:** The chart is pushed under the `/charts` namespace so it does not collide with the container image package (same repo name, different OCI path).
 
 ## License
 

@@ -66,7 +66,7 @@ jobs:
           sed -i "s/^version: .*/version: ${VERSION}/" charts/external-dns-firewalla/Chart.yaml
           sed -i "s/^appVersion: .*/appVersion: \"${VERSION}\"/" charts/external-dns-firewalla/Chart.yaml
           helm package charts/external-dns-firewalla -d /tmp
-          helm push /tmp/external-dns-firewalla-${VERSION}.tgz oci://ghcr.io/${{ github.repository_owner }}
+          helm push /tmp/external-dns-firewalla-${VERSION}.tgz oci://ghcr.io/${{ github.repository_owner }}/charts
 
   listener-binaries:
     name: Cross-compile listener (${{ matrix.goarch }})
