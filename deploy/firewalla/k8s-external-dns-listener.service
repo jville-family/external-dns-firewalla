@@ -3,6 +3,8 @@ Description=external-dns Firewalla Listener
 Documentation=https://github.com/jville-family/external-dns-firewalla
 After=network-online.target firerouter_dns.service
 Wants=network-online.target
+StartLimitIntervalSec=60
+StartLimitBurst=5
 
 [Service]
 Type=simple
@@ -13,17 +15,19 @@ EnvironmentFile=/home/pi/.firewalla/k8s-external-dns/config.env
 ExecStart=/home/pi/.firewalla/k8s-external-dns/listener
 Restart=on-failure
 RestartSec=5
+TimeoutStopSec=15
+SyslogIdentifier=external-dns-firewalla-listener
 
 # Sandboxing / hardening
 # NoNewPrivileges must stay false so /usr/bin/sudo (setuid) can escalate
 # only for the firerouter_dns systemctl commands allowed in sudoers.
+# ProtectKernelTunables=, ProtectKernelModules=, ProtectControlGroups=,
+# PrivateDevices=, and similar options imply NoNewPrivileges=yes and
+# silently override this setting — sudo then fails with
+# "The no new privileges flag is set".
 ProtectSystem=strict
-ReadWritePaths=/home/pi/.firewalla/k8s-external-dns/ /home/pi/.firewalla/config/dnsmasq_local/ /run/dbus /run/systemd
+ReadWritePaths=/home/pi/.firewalla/k8s-external-dns/ /home/pi/.firewalla/config/dnsmasq_local/ /run/systemd
 PrivateTmp=true
-ProtectDevices=true
-ProtectKernelTunables=true
-ProtectKernelModules=true
-ProtectControlGroups=true
 NoNewPrivileges=false
 
 [Install]

@@ -78,3 +78,13 @@ jobs:
           sed 's/^ProtectSystem=.*/# ProtectSystem omitted in CI/' \
             deploy/firewalla/k8s-external-dns-listener.service > /tmp/unit.service
           systemd-analyze verify /tmp/unit.service || true
+
+      - name: unit must allow sudo setuid
+        run: |
+          # These settings imply NoNewPrivileges=yes and block sudo systemctl.
+          if grep -E '^(ProtectKernelTunables|ProtectKernelModules|ProtectKernelLogs|ProtectClock|ProtectControlGroups|PrivateDevices|MemoryDenyWriteExecute|RestrictSUIDSGID)=' \
+            deploy/firewalla/k8s-external-dns-listener.service; then
+            echo "unit implies NoNewPrivileges; sudo firerouter_dns reload will fail" >&2
+            exit 1
+          fi
+          grep -q '^NoNewPrivileges=false' deploy/firewalla/k8s-external-dns-listener.service
