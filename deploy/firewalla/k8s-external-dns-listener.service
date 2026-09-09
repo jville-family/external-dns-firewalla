@@ -21,12 +21,13 @@ SyslogIdentifier=external-dns-firewalla-listener
 # Sandboxing / hardening
 # NoNewPrivileges must stay false so /usr/bin/sudo (setuid) can escalate
 # only for the firerouter_dns systemctl commands allowed in sudoers.
+# ProtectKernelTunables=, ProtectKernelModules=, ProtectControlGroups=,
+# PrivateDevices=, and similar options imply NoNewPrivileges=yes and
+# silently override this setting — sudo then fails with
+# "The no new privileges flag is set".
 ProtectSystem=strict
 ReadWritePaths=/home/pi/.firewalla/k8s-external-dns/ /home/pi/.firewalla/config/dnsmasq_local/ /run/systemd
 PrivateTmp=true
-ProtectKernelTunables=true
-ProtectKernelModules=true
-ProtectControlGroups=true
 NoNewPrivileges=false
 
 [Install]
