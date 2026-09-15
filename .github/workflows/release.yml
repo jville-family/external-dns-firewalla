@@ -109,7 +109,7 @@ jobs:
       # docker/build-push-action uploads a gzip .dockerbuild record that is not a
       # valid zip. download-artifact without a pattern fetches every artifact and
       # fails on that file after retries.
-      - uses: actions/download-artifact@v5
+      - uses: actions/download-artifact@v8
         with:
           path: artifacts
           merge-multiple: true
